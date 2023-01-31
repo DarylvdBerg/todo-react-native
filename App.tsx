@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, View, Text, FlatList, TextInput } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Platform, Text, FlatList, TextInput, KeyboardAvoidingView } from 'react-native';
 import { CustomButton } from '@components/CustomButton';
 import { ITask } from '@components/Task';
 import { Task } from '@components/Task';
@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export default function App() {
   const [tasks, setTasks] = useState<Array<ITask>>([]);
-  const [task, setTask] = useState('');
+  const [task, setTask] = useState(undefined);
 
   const clickHandler = () => {
     setTasks([...tasks, {title: task, completed: false}])
@@ -23,14 +23,17 @@ export default function App() {
       <View style={styles.tasks}>
       <FlatList data={tasks} renderItem={({item}) => <Task task={item}/>} />
       </View>
-      <View style={styles.inputSection}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.inputSection}>
         <CustomButton text="Click me!" clickHandler={clickHandler}/>
         <TextInput 
           style={styles.inputText} 
           placeholder="Write down a new todo!"
+          value={task}
           onChangeText={text => setTask(text)}
         />
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -61,7 +64,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     position: 'absolute',
-    bottom: 20
+    bottom: 20,
   },
   inputText: {
     backgroundColor: 'white',
